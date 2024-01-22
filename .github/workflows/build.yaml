@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    uses: dt-uibk-workshop/github-workflows/.github/workflows/release-docker.yaml@feat/release-docker
+    uses: dt-uibk-workshop/github-workflows/.github/workflows/release-docker.yaml@main
     permissions:
       contents: write
       issues: write
