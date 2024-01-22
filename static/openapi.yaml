@@ -1,0 +1,133 @@
+openapi: 3.0.0
+info:
+  title: Minimal Go APP APP_NAME - API
+  version: VERSION
+  description: |
+
+    ### Build Properties
+
+    Properties for [workflow](WORKFLOW_LINK) in [REPOSITORY](REPOSITORY_URL):
+
+    | Key | Value |
+    | --- | ----- |
+    | Build Timestamp | BUILD_TIMESTAMP |
+    | App Version | [VERSION](REPOSITORY_URL/releases/tag/vVERSION) |
+    | Commit Hash | [COMMIT_HASH](REPOSITORY_URL/commit/COMMIT_HASH) |
+
+paths:
+  /system/info:
+    get:
+      summary: Get system information
+      parameters:
+        - in: query
+          name: slow-down
+          schema:
+            type: integer
+          description: Slow down request by the provided value (seconds)
+        - in: query
+          name: http-status-code
+          schema:
+            type: integer
+          description: The endpoint returns this value as http status code
+        - in: query
+          name: pod-name
+          schema:
+            type: string
+          description: The pod-name on which the above query-params should be applied to (if empty, no filtering happens)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    value:
+                      type: string
+  /oom:
+    post:
+      summary: Generates Out of Memory
+      parameters:
+        - in: query
+          name: pod-name
+          schema:
+            type: string
+          description: The pod-name on which the above query-params should be applied to (if empty, no filtering happens)
+      responses:
+        '200':
+          description: "No response because of OOM"
+  /users:
+    get:
+      summary: Get a list of users
+      parameters:
+        - in: query
+          name: slow-down
+          schema:
+            type: integer
+          description: Slow down request by the provided value (seconds)
+        - in: query
+          name: http-status-code
+          schema:
+            type: integer
+          description: The endpoint returns this value as http status code
+        - in: query
+          name: pod-name
+          schema:
+            type: string
+          description: The pod-name on which the above query-params should be applied to (if empty, no filtering happens)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+    post:
+      summary: Add a new user
+      parameters:
+        - in: query
+          name: slow-down
+          schema:
+            type: integer
+          description: Slow down request by the provided value (seconds)
+        - in: query
+          name: http-status-code
+          schema:
+            type: integer
+          description: The endpoint returns this value as http status code
+        - in: query
+          name: pod-name
+          schema:
+            type: string
+          description: The pod-name on which the above query-params should be applied to (if empty, no filtering happens)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request

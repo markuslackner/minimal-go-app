@@ -1,0 +1,19 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: dt-uibk-workshop/github-workflows/.github/workflows/release-docker.yaml@feat/release-docker
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    with:
+      IMAGE_NAME: ${{ github.repository }}

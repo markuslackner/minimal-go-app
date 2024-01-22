@@ -1,2 +1,1 @@
-# minimal-go-app
-minimal-go-app
+# Minimal Go App
