@@ -4,7 +4,7 @@
     "config:base"
   ],
   "repositories": [
-    "dt-uibk-workshop/minimal-go-app-1"
+    "dt-uibk-workshop/minimal-go-app"
   ],
   "dependencyDashboard": false,
   "prHourlyLimit": 100
