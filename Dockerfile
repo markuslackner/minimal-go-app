@@ -35,7 +35,7 @@ RUN sed -i -e "s/REPOSITORY/$(echo ${REPOSITORY} | sed -e 's/\//\\\//g')/g" /app
 RUN echo "templated openapi.yaml:\n$(cat static/openapi.yaml)"
 
 # Start with a minimal Alpine image
-FROM alpine:3.17
+FROM alpine:3.19
 
 # Install extra packages
 # See https://github.com/gliderlabs/docker-alpine/issues/136#issuecomment-272703023
