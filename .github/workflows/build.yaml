@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    uses: dt-uibk-workshop/github-workflows/.github/workflows/release-docker.yaml@main
+    uses: dt-uibk-workshop/github-workflows/.github/workflows/build-docker-with-helm.yaml@main
     permissions:
       contents: write
       issues: write
@@ -17,3 +17,6 @@ jobs:
       packages: write
     with:
       IMAGE_NAME: ${{ github.repository }}
+      HELM_CHART_LOCATION: chart
+    secrets:
+      TOKEN: ${{ secrets.RENOVATE_DISPATCH_TOKEN }}
