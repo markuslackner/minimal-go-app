@@ -1,0 +1,11 @@
+name: PR Commit-Linting
+
+on:
+  workflow_call:
+  pull_request:
+
+jobs:
+  commitlint:
+    uses: dt-uibk-workshop/github-workflows/.github/workflows/commit-linting.yaml@main
+    permissions:
+      contents: read # for checkout
