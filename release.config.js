@@ -8,6 +8,8 @@ module.exports = {
             // https://github.com/semantic-release/github
             releasedLabels: false,
             successComment: false,
+            failComment: false,
+            failTitle: false,
         }],
         // https://github.com/semantic-release/exec
         ["@semantic-release/exec", {
@@ -20,31 +22,4 @@ module.exports = {
         }],
     ],
     preset: "conventionalcommits", // default types spec: https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.0.0/README.md#types
-    releaseRules: [
-        // extending the default ReleaseRules: https://github.com/semantic-release/commit-analyzer/blob/master/lib/default-release-rules.js
-        {type: 'build', release: 'patch'},
-        {type: 'ci', release: 'patch'},
-        {type: 'chore', release: 'patch'},
-        {type: 'docs', release: 'patch'},
-        {type: 'refactor', release: 'patch'},
-        {type: 'style', release: 'patch'},
-        {type: 'test', release: 'patch'},
-    ],
-    presetConfig: {
-        types: [
-            // overriding the default presetConfig: https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-conventionalcommits/writer-opts.js#L181
-            {type: 'feat', section: 'Features'},
-            {type: 'feature', section: 'Features'},
-            {type: 'fix', section: 'Bug Fixes'},
-            {type: 'perf', section: 'Performance Improvements'},
-            {type: 'revert', section: 'Reverts'},
-            {type: 'docs', section: 'Documentation'},
-            {type: 'style', section: 'Styles'},
-            {type: 'chore', section: 'Miscellaneous Chores'},
-            {type: 'refactor', section: 'Code Refactoring'},
-            {type: 'test', section: 'Tests'},
-            {type: 'build', section: 'Build System'},
-            {type: 'ci', section: 'Continuous Integration'}
-        ]
-    }
 }
