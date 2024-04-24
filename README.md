@@ -17,7 +17,7 @@
 
 # Workshop Exercises
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](todo)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/dt-uibk-workshop/minimal-go-app-demo)
 
 ![exercise_arch_overview.png](docs%2Fimg%2Fexercise_arch_overview.png)
 
@@ -56,14 +56,14 @@ git push
 ### 1c) Access your minimal-go-app via exposed Ingress / Swagger UI
 
 ```bash
-curl https://minimal-go-app-demo.cicd-workshop.at/ # or open via browser
+curl https://minimal-go-app-demo.dt-uibk-workshop.com/ # or open via browser
 ```
 
 ## 2) Continuous Delivery
 
-* Open Argo CD https://argocd.cicd-workshop.at/
+* Open Argo CD https://argocd.dt-uibk-workshop.com/
 * and navigate to your
-  Application: [ArgoCD minimal-go-app-demo](https://argocd.cicd-workshop.at/applications/argocd/minimal-go-app-demo.minimal-go-app-demo?view=tree&resource=)
+  Application: [ArgoCD minimal-go-app-demo](https://argocd.dt-uibk-workshop.com/applications/argocd/minimal-go-app-demo.minimal-go-app-demo?view=tree&resource=)
 
 ### 2a) Create a new Release and watch CI / CD path to K8s-Cluster
 
