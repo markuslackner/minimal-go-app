@@ -1,5 +1,5 @@
 apiVersion: v2
-name: minimal-go-app-demo
+name: minimal-go-app
 version: 0.0.0
 appVersion: 0.0.0
-description: A Helm chart for minimal-go-app-demo
+description: A Helm chart for minimal-go-app
