@@ -3,13 +3,22 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"context"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/gorilla/mux"
+	"k8s.io/client-go/rest"
+	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/klog/v2"
+	"k8s.io/client-go/tools/leaderelection/resourcelock"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/leaderelection"
 )
 
 var systemInfoKeys = []string{"MY_APP_VERSION", "MY_POD_NAME", "MY_POD_IP", "MY_POD_SERVICE_ACCOUNT", "MY_POD_NAMESPACE", "MY_NODE_NAME"}
@@ -27,9 +36,28 @@ type SystemInfo struct {
 
 var users []User = []User{
 	{
-		Name:  "Work Shop",
-		Email: "workshop@dynatrace.com",
+		Name:  "Engineering Kiosk",
+		Email: "Kiosk@Engineering.com",
 	},
+}
+
+var currentLeader string
+
+type CurrentLeader struct {
+	CurrentLeader string `json:"currentLeader"`
+  	IAmTheLeader string `json:"iAmTheLeader"`
+}
+
+func getCurrentLeader(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")	
+	iAmTheLeader:="currently I am not the leader :-("
+	if getMyPodName() == currentLeader {
+		iAmTheLeader="I am the leader :-)"
+	}
+	json.NewEncoder(w).Encode(CurrentLeader{
+		CurrentLeader: currentLeader,
+		IAmTheLeader: iAmTheLeader,
+	})	
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
@@ -79,12 +107,76 @@ func main() {
 	r.HandleFunc("/users", addUser).Methods("POST")
 	r.HandleFunc("/oom", oom).Methods("POST")
 	r.HandleFunc("/system/info", systemInfo).Methods("GET")
+	r.HandleFunc("/leader", getCurrentLeader).Methods("GET")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	// request handlers
 	r.Use(loggingHandler)
 	r.Use(slowDownRequestHandler)
 	r.Use(fakingHttpStatusCodeHandler)
+
+	// start leader election
+	kubeConfig, err := rest.InClusterConfig()
+	if err != nil {
+		log.Fatal("failed to get in cluster config", err)
+	}
+	client := clientset.NewForConfigOrDie(kubeConfig)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-ch
+		klog.Info("Received termination, signaling shutdown")
+		cancel()
+	}()
+	leaseId := getMyPodName()
+	lock := &resourcelock.LeaseLock{
+		LeaseMeta: metav1.ObjectMeta{
+			Name:      "test-application",
+			Namespace: "test",
+		},
+		Client: client.CoordinationV1(),
+		LockConfig: resourcelock.ResourceLockConfig{
+			Identity: leaseId,
+		},
+	}
+
+	// start the leader election code loop
+	leaderelection.RunOrDie(ctx, leaderelection.LeaderElectionConfig{
+		Lock: lock,
+		// IMPORTANT: you MUST ensure that any code you have that
+		// is protected by the lease must terminate **before**
+		// you call cancel. Otherwise, you could have a background
+		// loop still running and another process could
+		// get elected before your background loop finished, violating
+		// the stated goal of the lease.
+		ReleaseOnCancel: true,
+		LeaseDuration:   16 * time.Second,
+		RenewDeadline:   8 * time.Second,
+		RetryPeriod:     2 * time.Second,
+		Callbacks: leaderelection.LeaderCallbacks{
+			OnStartedLeading: func(ctx context.Context) {
+				// we're notified when we start - this is where you would
+				// usually put your code
+				klog.Infof("started leading")
+			},
+			OnStoppedLeading: func() {
+				// we can do cleanup here
+				klog.Infof("leader lost: %s", leaseId)
+				os.Exit(0)
+			},
+			OnNewLeader: func(identity string) {
+				currentLeader = identity
+				// we're notified when new leader elected
+				if identity == leaseId {
+					// I just got the lock
+					return
+				}
+				klog.Infof("new leader elected: %s", identity)
+			},
+		},
+	})
 
 	// Start the server
 	log.Fatal(http.ListenAndServe(":8000", r))

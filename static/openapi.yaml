@@ -131,3 +131,18 @@ paths:
           description: Created
         '400':
           description: Bad Request
+  /leader:
+    get:
+      summary: Get the current leader      
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  currentLeader:
+                    type: string
+                  iAmTheLeader:
+                    type: string
