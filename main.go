@@ -115,6 +115,12 @@ func main() {
 	r.Use(slowDownRequestHandler)
 	r.Use(fakingHttpStatusCodeHandler)
 
+	// start the server inside go func
+	go func() {
+		// Start the server
+		log.Fatal(http.ListenAndServe(":8000", r))
+	}()
+
 	// start leader election
 	kubeConfig, err := rest.InClusterConfig()
 	if err != nil {
@@ -177,9 +183,6 @@ func main() {
 			},
 		},
 	})
-
-	// Start the server
-	log.Fatal(http.ListenAndServe(":8000", r))
 }
 
 func health(w http.ResponseWriter, r *http.Request) {
