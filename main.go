@@ -50,9 +50,11 @@ type CurrentLeader struct {
 
 func getCurrentLeader(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")	
-	iAmTheLeader:="currently I am not the leader :-("
+	iAmTheLeader:=""
 	if getMyPodName() == currentLeader {
 		iAmTheLeader="I am the leader :-)"
+	} else {
+		iAmTheLeader=fmt.Sprintf("currently I am not the leader, because I am %s", getMyPodName())
 	}
 	json.NewEncoder(w).Encode(CurrentLeader{
 		CurrentLeader: currentLeader,
